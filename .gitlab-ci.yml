@@ -1,0 +1,37 @@
+variables:
+  TF_ROOT: ${CI_PROJECT_DIR}/infra
+  OPERATION:
+    description: "Select CI/CD-operation"
+    value: "terraform"
+    options:
+      - "terraform"
+      - "ansible"
+      - "k8s" 
+
+stages:
+  - plan
+
+plan:
+  stage: plan
+  before_script:
+    - cd ${TF_ROOT}
+  script:
+    - terraform init
+      -backend-config="address=https://cloud-services-engineer.gitlab.yandexcloud.net/api/v4/projects/${CI_PROJECT_ID}/terraform/state/tfstate"
+      -backend-config="lock_address=https://cloud-services-engineer.gitlab.yandexcloud.net/api/v4/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock"
+      -backend-config="unlock_address=https://cloud-services-engineer.gitlab.yandexcloud.net/api/v4/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock"
+      -backend-config="lock_method=POST"
+      -backend-config="unlock_method=DELETE"
+      -backend-config="username=terraform"
+      -backend-config="password=${TF_HTTP_PASSWORD}"
+      -backend-config="retry_wait_min=5"
+    - terraform validate
+    - terraform plan -out=tfplan
+  rules:
+    - if: $OPERATION == "terraform"
+      when: always 
+  artifacts:
+    paths:
+      - ${TF_ROOT}/tfplan
+      - ${TF_ROOT}/.terraform
+    expire_in: 1 day
