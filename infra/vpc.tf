@@ -2,16 +2,6 @@ resource "yandex_vpc_network" "vpc-network" {
   name = var.network_name
 }
 
-resource "yandex_vpc_subnet" "vpc-subnet-dev" {
-  v4_cidr_blocks = [var.v4_cidr_block_dev]
-  network_id     = yandex_vpc_network.vpc-network.id
-}
-
-resource "yandex_vpc_subnet" "vpc-subnet-prod" {
-  v4_cidr_blocks = [var.v4_cidr_block_prod]
-  network_id     = yandex_vpc_network.vpc-network.id
-}
-
 resource "yandex_vpc_security_group" "vpc-security-group" {
   network_id  = yandex_vpc_network.vpc-network.id
 

@@ -23,3 +23,7 @@ variable "v4_cidr_block_prod" {
   type = string
   default = "192.168.2.0/24"
 }
+
+variable "ssh_public_key0" {
+  type = string
+}
