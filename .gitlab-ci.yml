@@ -42,17 +42,17 @@ stages:
     - cd ${TF_ROOT}
     - cp ${YC_SA} ./yandex-sa.json
     - chmod 600 ./yandex-sa.json
-
-plan:
-  extends:
-    - .terraform-job
-  stage: plan
   variables:
     TF_VAR_cloud_id: ${YC_CLOUD_ID}
     TF_VAR_folder_id: ${YC_FOLDER_ID}
     TF_VAR_zone: ${YC_ZONE}
     TF_VAR_network_name: ${YC_NETWORK_NAME}
     TF_VAR_ssh_public_key0: ${YC_SSH_PUBLIC_KEY0}
+
+plan:
+  extends:
+    - .terraform-job
+  stage: plan
   script:
     - terraform init
       -backend-config="address=https://cloud-services-engineer.gitlab.yandexcloud.net/api/v4/projects/${CI_PROJECT_ID}/terraform/state/tfstate"
