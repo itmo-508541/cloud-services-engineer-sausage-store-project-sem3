@@ -13,10 +13,12 @@ variables:
     options:
       - "No"
       - "Yes"
+      - "Destroy"
 
 stages:
   - plan
   - apply
+  - destroy
 
 .terraform-job:
   image:
@@ -80,6 +82,20 @@ apply:
       when: always 
   script:
     - terraform apply -auto-approve
+  needs:
+    - job: plan
+      artifacts: true
+
+destroy:
+  extends:
+    - .terraform-job
+  stage: destroy
+  rules:
+    - if: $OPERATION == "terraform" && $APPLY == "Destroy"
+      when: always 
+  script:
+    - terraform refresh
+    - terraform destroy -auto-approve
   needs:
     - job: plan
       artifacts: true
