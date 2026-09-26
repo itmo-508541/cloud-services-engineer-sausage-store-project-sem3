@@ -16,8 +16,11 @@ variables:
       - "Destroy"
 
 stages:
+  - lint
+  - checkov
   - plan
   - apply
+  - terratest
   - destroy
 
 .terraform-job:
@@ -40,7 +43,7 @@ stages:
       }
       EOF
     - cd ${TF_ROOT}
-    - cp ${YC_SA} ./yandex-sa.json
+    - echo ${YC_SA} | base64 -d > ./yandex-sa.json
     - chmod 600 ./yandex-sa.json
   variables:
     TF_VAR_cloud_id: ${YC_CLOUD_ID}
@@ -48,6 +51,33 @@ stages:
     TF_VAR_zone: ${YC_ZONE}
     TF_VAR_network_name: ${YC_NETWORK_NAME}
     TF_VAR_ssh_public_key0: ${YC_SSH_PUBLIC_KEY0}
+    TF_HTTP_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate
+    TF_HTTP_LOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock
+    TF_HTTP_UNLOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock
+
+fmt:
+  extends:
+    - .terraform-job
+  stage: lint
+  script:
+    - terraform fmt -check -recursive -diff
+  rules:
+    - if: $OPERATION == "terraform"
+      when: always
+
+checkov:
+  stage: checkov
+  image:
+    name: bridgecrew/checkov:latest
+    entrypoint: [""]
+  tags:
+    - docker
+  script:
+    - cd ${TF_ROOT}
+    - checkov -d . --config-file .checkov.yml
+  rules:
+    - if: $OPERATION == "terraform"
+      when: always
 
 plan:
   extends:
@@ -55,13 +85,6 @@ plan:
   stage: plan
   script:
     - terraform init
-      -backend-config="address=https://cloud-services-engineer.gitlab.yandexcloud.net/api/v4/projects/${CI_PROJECT_ID}/terraform/state/tfstate"
-      -backend-config="lock_address=https://cloud-services-engineer.gitlab.yandexcloud.net/api/v4/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock"
-      -backend-config="unlock_address=https://cloud-services-engineer.gitlab.yandexcloud.net/api/v4/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock"
-      -backend-config="lock_method=POST"
-      -backend-config="unlock_method=DELETE"
-      -backend-config="username=terraform"
-      -backend-config="retry_wait_min=5"
     - terraform validate
     - terraform plan -out=tfplan
   rules:
@@ -85,6 +108,26 @@ apply:
   needs:
     - job: plan
       artifacts: true
+
+terratest:
+  extends:
+    - .terraform-job
+  stage: terratest
+  variables:
+    GOTOOLCHAIN: auto
+  rules:
+    - if: $OPERATION == "terraform" && $APPLY == "Yes"
+      when: always
+  script:
+    - apk add --no-cache go
+    - cd test
+    - go mod tidy
+    - go test -v
+  needs:
+    - apply
+  dependencies:
+    - apply
+  allow_failure: false
 
 destroy:
   extends:
