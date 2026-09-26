@@ -11,10 +11,19 @@ variables:
 stages:
   - plan
 
-plan:
-  stage: plan
+.terraform-job:
+  image:
+    name: hashicorp/terraform:latest
+    entrypoint: [""]
+  tags:
+    - docker
   before_script:
     - cd ${TF_ROOT}
+
+plan:
+  extends:
+    - .terraform-job
+  stage: plan
   script:
     - terraform init
       -backend-config="address=https://cloud-services-engineer.gitlab.yandexcloud.net/api/v4/projects/${CI_PROJECT_ID}/terraform/state/tfstate"
