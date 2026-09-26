@@ -7,9 +7,16 @@ variables:
       - "terraform"
       - "ansible"
       - "k8s" 
+  APPLY:
+    description: "Apply infra"
+    value: "No"
+    options:
+      - "No"
+      - "Yes"
 
 stages:
   - plan
+  - apply
 
 .terraform-job:
   image:
@@ -63,3 +70,16 @@ plan:
       - ${TF_ROOT}/tfplan
       - ${TF_ROOT}/.terraform
     expire_in: 1 day
+
+apply:
+  extends:
+    - .terraform-job
+  stage: apply
+  rules:
+    - if: $OPERATION == "terraform" && $APPLY == "Yes"
+      when: always 
+  script:
+    - terraform apply -auto-approve
+  needs:
+    - job: plan
+      artifacts: true
