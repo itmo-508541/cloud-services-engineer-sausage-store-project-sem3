@@ -61,7 +61,6 @@ plan:
       -backend-config="lock_method=POST"
       -backend-config="unlock_method=DELETE"
       -backend-config="username=terraform"
-      -backend-config="password=${TF_HTTP_PASSWORD}"
       -backend-config="retry_wait_min=5"
     - terraform validate
     - terraform plan -out=tfplan
