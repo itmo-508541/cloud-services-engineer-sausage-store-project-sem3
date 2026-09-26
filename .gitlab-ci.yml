@@ -31,6 +31,11 @@ stages:
       }
       EOF
     - cd ${TF_ROOT}
+  variables:
+    TF_VAR_cloud_id: ${YC_CLOUD_ID}
+    TF_VAR_folder_id: ${YC_FOLDER_ID}
+    TF_VAR_zone: ${YC_ZONE}
+    TF_VAR_network_name: ${YC_NETWORK_NAME}
 
 plan:
   extends:
