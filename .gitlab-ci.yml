@@ -31,6 +31,8 @@ stages:
       }
       EOF
     - cd ${TF_ROOT}
+    - cp ${YC_SA} ./yandex-sa.json
+    - chmod 600 ./yandex-sa.json
   variables:
     TF_VAR_cloud_id: ${YC_CLOUD_ID}
     TF_VAR_folder_id: ${YC_FOLDER_ID}
