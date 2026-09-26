@@ -5,7 +5,7 @@ resource "yandex_vpc_subnet" "vpc-subnet-prod" {
 
 module "vault-prod" {
     source = "./vm"
-    vm_name         = "Vault.Prod"
+    vm_name         = "vault-prod"
     ssh_public_key0  = var.ssh_public_key0
 #    ssh_public_key1  = var.ssh_public_key1
     subnet_id       = yandex_vpc_subnet.vpc-subnet-prod.id
