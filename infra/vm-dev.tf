@@ -4,10 +4,14 @@ resource "yandex_vpc_subnet" "vpc-subnet-dev" {
 }
 
 module "vault-dev" {
-    source = "./vm"
-    vm_name         = "vault-dev"
-    ssh_public_key0  = var.ssh_public_key0
-#    ssh_public_key1  = var.ssh_public_key1
-    subnet_id       = yandex_vpc_subnet.vpc-subnet-dev.id
-    zone            = var.zone
+  source          = "./vm"
+  vm_name         = "vm-dev"
+  ssh_public_key0 = var.ssh_public_key0
+  #    ssh_public_key1  = var.ssh_public_key1
+  subnet_id = yandex_vpc_subnet.vpc-subnet-dev.id
+  zone      = var.zone
+  labels = {
+    project = "sausage-store"
+    env     = "dev"
+  }
 }

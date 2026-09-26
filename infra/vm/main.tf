@@ -13,7 +13,7 @@ data "cloudinit_config" "user_data" {
 
   part {
     content_type = "text/cloud-config"
-    content      = templatefile("${path.module}/user-data.yaml.tpl", {
+    content = templatefile("${path.module}/user-data.yaml.tpl", {
       key0 = var.ssh_public_key0
       #key1 = var.ssh_public_key1
     })
@@ -32,6 +32,7 @@ resource "yandex_compute_instance" "vm" {
   name                      = var.vm_name
   platform_id               = var.vm_platform_id
   allow_stopping_for_update = true
+  labels                    = var.labels
 
   resources {
     cores         = 2
@@ -44,8 +45,9 @@ resource "yandex_compute_instance" "vm" {
   }
 
   network_interface {
-    subnet_id = var.subnet_id
-    nat       = true
+    subnet_id          = var.subnet_id
+    nat                = true
+    security_group_ids = var.security_group_ids
   }
 
   metadata = {
@@ -53,8 +55,12 @@ resource "yandex_compute_instance" "vm" {
   }
 
   scheduling_policy {
-    preemptible = true
+    preemptible = var.preemptible
   }
+}
+
+output "vm-name" {
+  value = yandex_compute_instance.vm.name
 }
 
 output "vm-external-ip" {
