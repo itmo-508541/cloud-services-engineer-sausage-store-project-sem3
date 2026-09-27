@@ -164,7 +164,7 @@ build-and-push-images:
   script:
     - docker build --build-arg VERSION=$CI_COMMIT_SHA --push -t itmo508541/sausage-backend:latest ./backend/
     - docker build --push -t itmo508541/sausage-frontend:latest ./frontend/
-    - docker build --push -t itmo508541/sausage-backend-report:latest ./backend-report/
+    - docker build --build-arg CONFIG=/run/secrets/env --push -t itmo508541/sausage-backend-report:latest ./backend-report/
   rules:
     - if: $OPERATION == "k8s"
       when: always

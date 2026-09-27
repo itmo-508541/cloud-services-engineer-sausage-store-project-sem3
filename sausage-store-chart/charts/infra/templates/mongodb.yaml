@@ -93,9 +93,7 @@ metadata:
   name: mongodb-init
   namespace: {{ .Release.Namespace }}
   annotations:
-    "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "10"
-    # "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+    argocd.argoproj.io/hook: Sync
   labels:
     {{- include "metadata.labels" . | nindent 4 }}
     app.kubernetes.io/component: mongodb
