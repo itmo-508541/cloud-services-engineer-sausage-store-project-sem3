@@ -23,6 +23,7 @@
   command: >-
     docker run -d --name vault --restart unless-stopped
         --cap-add IPC_LOCK
+        -e VAULT_ADDR=http://127.0.0.1:8200
         -p {{ vault_port }}:8200
         -v {{ vault_config_dir }}:/vault/config
         -v {{ vault_data_dir }}:/vault/file
