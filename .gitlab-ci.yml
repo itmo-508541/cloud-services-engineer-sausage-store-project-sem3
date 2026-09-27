@@ -33,27 +33,18 @@ stages:
 
 .terraform-job:
   before_script:
-    - |
-      cat << EOF > ~/.terraformrc
-      provider_installation {
-        network_mirror {
-          url = "https://terraform-mirror.yandexcloud.net/"
-          include = ["registry.terraform.io/*/*"]
-        }
-        direct {
-          exclude = ["registry.terraform.io/*/*"]
-        }
-      }
-      EOF
     - cd ${TF_ROOT}
     - *yandex-sa-script
     - export TF_VAR_ssh_public_key1="$(cat ./yandex-sa.pub)"
+  after_script:
+    - rm -f ${TF_ROOT}/yandex-sa.*
   variables:
     TF_VAR_cloud_id: ${YC_CLOUD_ID}
     TF_VAR_folder_id: ${YC_FOLDER_ID}
     TF_VAR_zone: ${YC_ZONE}
     TF_VAR_network_name: ${YC_NETWORK_NAME}
     TF_VAR_ssh_public_key0: ${YC_SSH_PUBLIC_KEY0}
+    TF_CLI_CONFIG_FILE: ${TF_ROOT}/.terraformrc
     TF_HTTP_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate
     TF_HTTP_LOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock
     TF_HTTP_UNLOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock
