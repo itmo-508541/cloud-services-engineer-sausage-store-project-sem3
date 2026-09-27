@@ -120,9 +120,8 @@ terratest:
     - go mod tidy
     - go test -v
   needs:
-    - apply
-  dependencies:
-    - apply
+    - job: apply
+      artifacts: false
   allow_failure: false
 
 destroy:
