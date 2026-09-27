@@ -150,5 +150,5 @@ ansible:
     - cat ./inventory/vault.ini
     - cat ../infra/yandex-sa.pub
   rules:
-    - if: $OPERATION == "ansible" && $APPLY == "true"
+    - if: $OPERATION == "ansible" && $APPLY == "Yes"
       when: always 
