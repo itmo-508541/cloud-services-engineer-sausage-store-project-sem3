@@ -148,6 +148,8 @@ ansible:
     - export VM_PROD=$(terraform output -raw vm_prod_address)
     - cd ${ANSIBLE_ROOT}
     - ansible --version
+    - ansible all -i inventory/vm.yml -m ping
+    - ansible-galaxy collection list
   rules:
     - if: $OPERATION == "ansible" && $APPLY == "Yes"
       when: always 
