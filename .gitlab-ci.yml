@@ -182,8 +182,6 @@ package-helm-chart:
     - curl --fail -u "$NEXUS_HELM_REPO_USER:$NEXUS_HELM_REPO_PASSWORD" $NEXUS_HELM_REPO --upload-file *.tgz
   needs:
     - build-and-push-images
-  rules:
-    - if: $OPERATION == "k8s"
-      when: manual
+  when: manual
   tags:
     - docker
