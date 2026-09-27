@@ -1,0 +1,6 @@
+all:
+  hosts:
+    prod:
+      ansible_host: "{{ lookup('env', 'VM_PROD') }}"
+    dev:
+      ansible_host: "{{ lookup('env', 'VM_DEV') }}"

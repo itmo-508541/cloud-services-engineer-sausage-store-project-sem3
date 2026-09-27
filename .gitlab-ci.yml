@@ -6,6 +6,7 @@ variables:
   TF_HTTP_UNLOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock
 
   ANSIBLE_ROOT: ${CI_PROJECT_DIR}/ansible
+  ANSIBLE_CONFIG: ${ANSIBLE_ROOT}/ansible.cfg
 
   OPERATION:
     description: "Select CI/CD-operation"
@@ -31,8 +32,9 @@ stages:
   - destroy
   - ansible
 
-after_script:
-  - rm -f ${TF_ROOT}/yandex-sa.*
+global:
+  after_script:
+    - rm -f ${TF_ROOT}/yandex-sa.*
 
 .yandex-sa:
   before_script: &yandex-sa-script
@@ -146,9 +148,7 @@ ansible:
     - export VM_DEV=$(terraform output -raw vm_dev_address)
     - export VM_PROD=$(terraform output -raw vm_prod_address)
     - cd ${ANSIBLE_ROOT}
-    - envsubst < ./inventory/template-vault.ini > ./inventory/vault.ini
-    - cat ./inventory/vault.ini
-    - cat ../infra/yandex-sa.pub
+    - ansible --version
   rules:
     - if: $OPERATION == "ansible" && $APPLY == "Yes"
       when: always 
