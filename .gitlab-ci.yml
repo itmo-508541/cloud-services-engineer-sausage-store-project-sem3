@@ -149,7 +149,7 @@ ansible:
     - cd ${ANSIBLE_ROOT}
     - ansible --version
     - ansible all -i inventory/vm.yml -m ping
-    - ansible-galaxy collection list
+    - ansible-playbook -i inventory/vm.yml vault-playbook.yml
   rules:
     - if: $OPERATION == "ansible" && $APPLY == "Yes"
       when: always 
