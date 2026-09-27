@@ -10,6 +10,7 @@ module "vault-dev" {
   ssh_public_key1 = var.ssh_public_key1
   subnet_id       = yandex_vpc_subnet.vpc-subnet-dev.id
   zone            = var.zone
+  preemptible     = false
   labels = {
     project = "sausage-store"
     env     = "dev"
