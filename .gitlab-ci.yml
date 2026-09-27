@@ -31,6 +31,8 @@ stages:
   - terratest
   - destroy
   - ansible
+  - build
+  - package
 
 default:
   after_script:
@@ -153,3 +155,34 @@ ansible:
   rules:
     - if: $OPERATION == "ansible" && $APPLY == "Yes"
       when: always 
+
+# Сборка и пуш Docker-образов в DockerHub
+build-and-push-images:
+  stage: build
+  before_script:
+    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+  script:
+    - docker build --build-arg VERSION=$CI_COMMIT_SHA --push -t itmo508541/sausage-backend:latest ./backend/
+    - docker build --push -t itmo508541/sausage-frontend:latest ./frontend/
+    - docker build --push -t itmo508541/sausage-backend-report:latest ./backend-report/
+  rules:
+    - if: $OPERATION == "k8s"
+      when: always
+
+# Упаковка и пуш Helm-чарта в Nexus
+package-helm-chart:
+  stage: package
+  image: 
+    name: alpine/helm:3.12.0
+    entrypoint: [""]
+  script:
+    - apk add curl
+    - helm package ./sausage-store-chart/
+    - curl -u "$NEXUS_HELM_REPO_USER:$NEXUS_HELM_REPO_PASSWORD" $NEXUS_HELM_REPO --upload-file *.tgz
+  needs:
+    - build-and-push-images
+  rules:
+    - if: $OPERATION == "k8s"
+      when: manual
+  tags:
+    - docker
