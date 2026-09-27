@@ -4,6 +4,8 @@ kind: StatefulSet
 metadata:
   name: mongodb
   namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   labels:
     {{- include "metadata.labels" . | nindent 4 }}
     app.kubernetes.io/component: mongodb
@@ -74,6 +76,8 @@ kind: Service
 metadata:
   name: mongodb
   namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   labels:
     {{- include "metadata.labels" . | nindent 4 }}
     app.kubernetes.io/component: mongodb
@@ -93,7 +97,11 @@ metadata:
   name: mongodb-init
   namespace: {{ .Release.Namespace }}
   annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "10"
+    # "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
     argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "-1"
   labels:
     {{- include "metadata.labels" . | nindent 4 }}
     app.kubernetes.io/component: mongodb
