@@ -32,7 +32,7 @@ stages:
   - destroy
   - ansible
 
-global:
+default:
   after_script:
     - rm -f ${TF_ROOT}/yandex-sa.*
 
