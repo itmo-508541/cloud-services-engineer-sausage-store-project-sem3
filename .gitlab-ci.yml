@@ -27,7 +27,6 @@ stages:
   before_script: &yandex-sa-script
     - echo ${YC_SA} | base64 -d > ./yandex-sa.json
     - chmod 600 ./yandex-sa.json
-    - apk add --no-cache jq
     - jq -r '.private_key' ./yandex-sa.json > ./yandex-sa.pem
     - chmod 600 ./yandex-sa.pem
     - ssh-keygen -y -f ./yandex-sa.pem > ./yandex-sa.pub
@@ -72,11 +71,6 @@ fmt:
 
 checkov:
   stage: checkov
-  image:
-    name: bridgecrew/checkov:latest
-    entrypoint: [""]
-  tags:
-    - docker
   script:
     - cd ${TF_ROOT}
     - checkov -d . --config-file .checkov.yml
@@ -124,7 +118,6 @@ terratest:
     - if: $OPERATION == "terraform" && $APPLY == "Yes"
       when: always
   script:
-    - apk add --no-cache go
     - cd test
     - go mod tidy
     - go test -v
