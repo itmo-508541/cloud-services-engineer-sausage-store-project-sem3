@@ -16,9 +16,9 @@ variable "ssh_public_key0" {
   type = string
 }
 
-# variable "ssh_public_key1" {
-#   type = string
-# }
+variable "ssh_public_key1" {
+  type = string
+}
 
 variable "subnet_id" {
   type = string

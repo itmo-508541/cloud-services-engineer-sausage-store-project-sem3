@@ -2,13 +2,13 @@
 users:
   - default
   - name: runner
-    type: RANDOM
     groups:
       - sudo
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
-    ssh-authorized-keys:
+    ssh_authorized_keys:
       - ${key0}
+      - ${key1}
 
 ssh_pwauth: false
 disable_root: true

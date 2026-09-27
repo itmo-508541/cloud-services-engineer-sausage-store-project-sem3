@@ -15,7 +15,7 @@ data "cloudinit_config" "user_data" {
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/user-data.yaml.tpl", {
       key0 = var.ssh_public_key0
-      #key1 = var.ssh_public_key1
+      key1 = var.ssh_public_key1
     })
   }
 }

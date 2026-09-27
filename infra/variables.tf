@@ -27,3 +27,7 @@ variable "v4_cidr_block_prod" {
 variable "ssh_public_key0" {
   type = string
 }
+
+variable "ssh_public_key1" {
+  type = string
+}
