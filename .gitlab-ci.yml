@@ -23,6 +23,15 @@ stages:
   - terratest
   - destroy
 
+.yandex-sa:
+  before_script: &yandex-sa-script
+    - echo ${YC_SA} | base64 -d > ./yandex-sa.json
+    - chmod 600 ./yandex-sa.json
+    - apk add --no-cache jq
+    - jq -r '.private_key' ./yandex-sa.json > ./yandex-sa.pem
+    - chmod 600 ./yandex-sa.pem
+    - ssh-keygen -y -f ./yandex-sa.pem > ./yandex-sa.pub
+
 .terraform-job:
   image:
     name: hashicorp/terraform:latest
@@ -43,13 +52,9 @@ stages:
       }
       EOF
     - cd ${TF_ROOT}
-    - echo ${YC_SA} | base64 -d > ./yandex-sa.json
-    - chmod 600 ./yandex-sa.json
-    - apk add --no-cache jq
-    - jq -r '.private_key' ./yandex-sa.json > ./yandex-sa.pem
-    - chmod 600 ./yandex-sa.pem
-    - ssh-keygen -y -f ./yandex-sa.pem > ./yandex-sa.pub
+    - *yandex-sa-script
     - export TF_VAR_ssh_public_key1="$(cat ./yandex-sa.pub)"
+    - cat ./yandex-sa.pub
   variables:
     TF_VAR_cloud_id: ${YC_CLOUD_ID}
     TF_VAR_folder_id: ${YC_FOLDER_ID}
