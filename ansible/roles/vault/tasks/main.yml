@@ -1,0 +1,30 @@
+---
+- name: Create directory for Vault configuration
+  file:
+    path: "{{ vault_config_dir }}"
+    state: directory
+
+- name: Create Vault data directory
+  file:
+    path: "{{ vault_data_dir }}"
+    state: directory
+
+- name: Check if Vault container exists
+  command: docker inspect vault
+  register: vault_container
+  failed_when: false
+  changed_when: false
+
+- name: Remove Vault container to recreate it
+  command: docker rm -f vault
+  when: vault_container.rc == 0 and vault_recreate | bool
+
+- name: Run Vault container in dev mode
+  command: >-
+    docker run -d --name vault --restart unless-stopped
+        --cap-add IPC_LOCK
+        -p {{ vault_port }}:8200
+        -v {{ vault_config_dir }}:/vault/config
+        -v {{ vault_data_dir }}:/vault/file
+      hashicorp/vault:{{ vault_version }}
+  when: vault_container.rc != 0 or vault_recreate | bool
