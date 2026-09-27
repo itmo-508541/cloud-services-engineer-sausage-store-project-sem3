@@ -33,11 +33,6 @@ stages:
     - ssh-keygen -y -f ./yandex-sa.pem > ./yandex-sa.pub
 
 .terraform-job:
-  image:
-    name: hashicorp/terraform:latest
-    entrypoint: [""]
-  tags:
-    - docker
   before_script:
     - |
       cat << EOF > ~/.terraformrc
@@ -54,7 +49,6 @@ stages:
     - cd ${TF_ROOT}
     - *yandex-sa-script
     - export TF_VAR_ssh_public_key1="$(cat ./yandex-sa.pub)"
-    - cat ./yandex-sa.pub
   variables:
     TF_VAR_cloud_id: ${YC_CLOUD_ID}
     TF_VAR_folder_id: ${YC_FOLDER_ID}
@@ -70,6 +64,7 @@ fmt:
     - .terraform-job
   stage: lint
   script:
+    - terraform version
     - terraform fmt -check -recursive -diff
   rules:
     - if: $OPERATION == "terraform"
