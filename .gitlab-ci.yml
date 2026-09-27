@@ -1,5 +1,12 @@
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}/infra
+  TF_CLI_CONFIG_FILE: ${TF_ROOT}/.terraformrc
+  TF_HTTP_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate
+  TF_HTTP_LOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock
+  TF_HTTP_UNLOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock
+
+  ANSIBLE_ROOT: ${CI_PROJECT_DIR}/ansible
+
   OPERATION:
     description: "Select CI/CD-operation"
     value: "terraform"
@@ -22,6 +29,10 @@ stages:
   - apply
   - terratest
   - destroy
+  - ansible
+
+after_script:
+  - rm -f ${TF_ROOT}/yandex-sa.*
 
 .yandex-sa:
   before_script: &yandex-sa-script
@@ -36,18 +47,12 @@ stages:
     - cd ${TF_ROOT}
     - *yandex-sa-script
     - export TF_VAR_ssh_public_key1="$(cat ./yandex-sa.pub)"
-  after_script:
-    - rm -f ${TF_ROOT}/yandex-sa.*
   variables:
     TF_VAR_cloud_id: ${YC_CLOUD_ID}
     TF_VAR_folder_id: ${YC_FOLDER_ID}
     TF_VAR_zone: ${YC_ZONE}
     TF_VAR_network_name: ${YC_NETWORK_NAME}
     TF_VAR_ssh_public_key0: ${YC_SSH_PUBLIC_KEY0}
-    TF_CLI_CONFIG_FILE: ${TF_ROOT}/.terraformrc
-    TF_HTTP_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate
-    TF_HTTP_LOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock
-    TF_HTTP_UNLOCK_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/tfstate/lock
 
 fmt:
   extends:
@@ -131,3 +136,19 @@ destroy:
   needs:
     - job: plan
       artifacts: true
+
+ansible:
+  stage: ansible
+  script:
+    - cd ${TF_ROOT}
+    - *yandex-sa-script
+    - terraform init
+    - export VM_DEV=$(terraform output -raw vm_dev_address)
+    - export VM_PROD=$(terraform output -raw vm_prod_address)
+    - cd ${ANSIBLE_ROOT}
+    - envsubst < ./inventory/template-vault.ini > ./inventory/vault.ini
+    - cat ./inventory/vault.ini
+    - cat ../infra/yandex-sa.pub
+  rules:
+    - if: $OPERATION == "ansible" && $APPLY == "true"
+      when: always 
