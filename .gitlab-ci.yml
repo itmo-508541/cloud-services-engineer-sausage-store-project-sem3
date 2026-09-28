@@ -178,11 +178,11 @@ package-helm-chart:
   script:
     - apk add curl
     - helm package ./sausage-store-chart/
-    - ls -la *.tgz
     - curl --fail -u "$NEXUS_HELM_REPO_USER:$NEXUS_HELM_REPO_PASSWORD" $NEXUS_HELM_REPO --upload-file *.tgz
   needs:
     - job: build-and-push-images
-      optional: true
-  when: manual
+  rules:
+    - if: $OPERATION == "k8s"
+      when: manual
   tags:
     - docker
