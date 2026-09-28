@@ -7,9 +7,9 @@
 * [Работающее приложение](https://front-amindubaev.2sem.students-projects.ru/)
   * Это продолжение работы второго семестра.
 * [Репозиторий в GitLab](https://cloud-services-engineer.gitlab.yandexcloud.net/s18468137/sausage-store)
-  * Пайплайн [terraform: plan, apply и terratest](https://cloud-services-engineer.gitlab.yandexcloud.net/s18468137/sausage-store/-/pipelines/22850)
+  * Пайплайн [terraform](https://cloud-services-engineer.gitlab.yandexcloud.net/s18468137/sausage-store/-/pipelines/22850): plan, apply и terratest
   * Пайплайн [ansible](https://cloud-services-engineer.gitlab.yandexcloud.net/s18468137/sausage-store/-/pipelines/22796)
-  * Пайплайн k8s: [build-and-push-images и package-helm-chart](https://cloud-services-engineer.gitlab.yandexcloud.net/s18468137/sausage-store/-/pipelines/22851)
+  * Пайплайн [k8s](https://cloud-services-engineer.gitlab.yandexcloud.net/s18468137/sausage-store/-/pipelines/22851): build-and-push-images и package-helm-chart
 * [Приложение в Argo CD](https://argocd.infra.students-projects.ru/applications/argocd/sausage-store-amindubaev).
   * APP HEALTH: `Healthy`, LAST SYNC: `Sync OK to 1.0.1`
 * [UI для Vault](http://158.160.228.2:8200/ui/)
