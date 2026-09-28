@@ -2,27 +2,18 @@
 
 ![image](https://user-images.githubusercontent.com/9394918/121517767-69db8a80-c9f8-11eb-835a-e98ca07fd995.png)
 
-## Использованные технологии
+## Ссылки на ресурсы для ревью
 
-* Frontend – TypeScript, Angular.
-* Backend  – Java 16, Spring Boot, Spring Data.
-* Database – PostgreSQL, MongoDB.
-
-## Подготовка к первому деплою приложения
-
-HashiCorp Vault должен быть установлен в текущем namespace, он должен быть доступен по адресу http://vault:8200
-
-- Для настройки Vault нужно воспользоваться [инструкцией](vault-chart/README.md)
-
-## Деплой приложения
-
-После `git push origin main` приложение автоматически будет выложено в k8s кластер.
-
-- Для деплоя приложения и ручной проверки нужно воспользоваться [инструкцией](sausage-store-chart/README.md)
-
-## Релиз новой версии приложения
-
-После выпуска новой версии одного из образов приложения следует добавить информацию в CHANGELOG соответствующего образа [backend](backend/CHANGELOG.md), [backend-report](backend-report/CHANGELOG.md) или [frontend](frontend/CHANGELOG.md), и записать номер версии в Chart пода [backend](sausage-store-chart/charts/backend/Chart.yaml), [frontend](sausage-store-chart/charts/backend-report/Chart.yaml) или [frontend](sausage-store-chart/charts/frontend/Chart.yaml).
+* [Работающее приложение](https://front-amindubaev.2sem.students-projects.ru/)
+  * Это продолжение работы второго семестра.
+* [Репозиторий в GitLab](https://cloud-services-engineer.gitlab.yandexcloud.net/s18468137/sausage-store)
+  * Пайплайн [terraform: plan, apply и terratest](https://cloud-services-engineer.gitlab.yandexcloud.net/s18468137/sausage-store/-/pipelines/22850)
+  * Пайплайн [ansible](https://cloud-services-engineer.gitlab.yandexcloud.net/s18468137/sausage-store/-/pipelines/22796)
+  * Пайплайн k8s: [build-and-push-images и package-helm-chart](https://cloud-services-engineer.gitlab.yandexcloud.net/s18468137/sausage-store/-/pipelines/22851)
+* [Приложение в Argo CD](https://argocd.infra.students-projects.ru/applications/argocd/sausage-store-amindubaev).
+  * APP HEALTH: `Healthy`, LAST SYNC: `Sync OK to 1.0.1`
+* [UI для Vault](http://158.160.228.2:8200/ui/)
+  * [Инструкция по настройке](VAULT.md)
 
 ## Требования к локальному окружению разработчика
 
